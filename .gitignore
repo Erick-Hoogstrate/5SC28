@@ -6,6 +6,7 @@
 /.ipynb_checkpoints
 /test/*
 !/test/README.md
+test.ipynb
 
 # User-specific files
 *.rsuser
