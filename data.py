@@ -5,7 +5,7 @@ from typing import Union
 
 TRAIN_DATA = r"disc-benchmark-files\training-data.csv"
 
-def load_data( as_tensor:bool=True)->Union[pd.DataFrame, torch.Tensor]:
+def load_data( as_tensor:bool=True)->Union[np.ndarray, torch.Tensor]:
     """
     Loads training or test data from given files.
 
@@ -21,10 +21,12 @@ def load_data( as_tensor:bool=True)->Union[pd.DataFrame, torch.Tensor]:
     if as_tensor:
         data = torch.tensor(data)
 
-    return data[:, 0], data[:, 1]
+    x, y = data[:, 0], data[:, 1]
+
+    return x, y
 
 
-def load_narx_data(n_a, n_b, train_test="train", as_tensor=True):
+def load_narx_data(n_a:int, n_b:int,  as_tensor:bool=True)->Union[np.ndarray, torch.Tensor]:
     """
     Loads training or test data from given files, and formats it as a NARX input([X_{k-n_b}, ..., X_{k-1}, Y_{k-n_a}, ... , Y_{k-1}]).
 
@@ -37,8 +39,11 @@ def load_narx_data(n_a, n_b, train_test="train", as_tensor=True):
     returns:
     x_data, y_data
     """
-    x, y = load_data(train_test, as_tensor)
+    x, y = load_data(as_tensor)
+    X, y= convert_to_narx(x, y, n_a, n_b, as_tensor)
 
+
+def convert_to_narx(x, y, n_a, n_b, as_tensor:bool=True):
     X = []
     Y = []
     for k in range(max(n_a, n_b), len(x)):

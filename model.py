@@ -12,3 +12,10 @@ class Narx(nn.Module):
         x1 = torch.sigmoid(self.lay1(x))
         y = self.lay2(x1)[:, 0]
         return y
+
+
+if __name__ == '__main__':
+    my_narx=Narx(5,10)
+    my_data=torch.rand((10,5)).double()
+    assert my_narx.forward(my_data).shape == torch.Size([10]), 'something went wrong'
+    print('test passed')
