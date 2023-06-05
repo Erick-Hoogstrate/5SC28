@@ -20,7 +20,7 @@ def load_data(section="train", split=[0.6, 0.2, 0.2], total_number_of_points=200
     x_data, y_data
     """
     data = pd.read_csv(TRAIN_DATA).to_numpy()[:total_number_of_points]
-    print(f"Considering {len(data)} datapoints")
+#     print(f"Considering {len(data)} datapoints")
     X_train_val, X_test, y_train_val, y_test = train_test_split(data[:, 0], data[:, 1], test_size=split[2], shuffle=False)
     X_train, X_val, y_train, y_val = train_test_split(X_train_val, y_train_val, test_size=split[1] / (split[0] + split[1]), shuffle=False)
 
@@ -31,11 +31,11 @@ def load_data(section="train", split=[0.6, 0.2, 0.2], total_number_of_points=200
     elif section == "validation":
         x = X_val
         y = y_val
-        print(f"Using {len(X_val)} datapoints for validation set")
+#         print(f"Using {len(X_val)} datapoints for validation set")
     elif section == "test":
         x = X_test
         y = y_test
-        print(f"Using {len(X_test)} datapoints for test set")
+#         print(f"Using {len(X_test)} datapoints for test set")
     else:
         raise ValueError("Invalid section value. Must be 'train', 'validation', or 'test'.")
 
