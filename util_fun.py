@@ -55,9 +55,11 @@ def plot_NRMS_Pred_vs_Sim(NRMS_pred, NRMS_sim, na_list, nb_list): # Plot results
             params[i, j, :] = [n_a, n_b]
 
     min_arg = np.unravel_index(NRMS_pred.argmin(keepdims=True), NRMS_pred.shape)
-    best_na, best_nb = params[min_arg].ravel().astype(int)
-    print(f"Best parameters by prediction NRMS: na= {best_na}, nb= {best_nb}")
+    best_na_pred, best_nb_pred = params[min_arg].ravel().astype(int)
+    print(f"Best parameters by prediction NRMS: na= {best_na_pred}, nb= {best_nb_pred}")
 
     min_arg = np.unravel_index(NRMS_sim.argmin(keepdims=True), NRMS_sim.shape)
-    best_na, best_nb = params[min_arg].ravel().astype(int)
-    print(f"Best parameters by simulation NRMS: na= {best_na}, nb= {best_nb}")
+    best_na_sim, best_nb_sim = params[min_arg].ravel().astype(int)
+    print(f"Best parameters by simulation NRMS: na= {best_na_sim}, nb= {best_nb_sim}")
+
+    return [best_na_pred, best_nb_pred], [best_na_sim, best_nb_sim]
