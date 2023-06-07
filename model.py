@@ -3,15 +3,22 @@ from torch import nn
 
 
 class Narx(nn.Module):
-    def __init__(self, n_in, n_hidden) -> None:
+    def __init__(self, n_in, n_hidden_nodes, n_hidden_layers=2) -> None:
         super().__init__()
-        self.lay1 = nn.Linear(n_in, n_hidden).double()
-        self.lay2 = nn.Linear(n_hidden, 1).double()
+        
+        # add input, hidden, and output layers
+        layers = [nn.Linear(n_in, n_hidden_nodes), nn.Sigmoid()]
+        for i in range(n_hidden_layers):
+            layers.append(nn.Linear(n_hidden_nodes, n_hidden_nodes))
+            layers.append(nn.Sigmoid())
+        layers += [nn.Linear(n_hidden_nodes, 1)]
+        layers = [layer.double() for layer in layers]
+
+        # unroll layers into sequential net
+        self.layers = nn.Sequential(*layers)
 
     def forward(self, x):
-        x1 = torch.sigmoid(self.lay1(x))
-        y = self.lay2(x1)[:, 0]
-        return y
+        return self.layers(x)[:, 0]
 
 
 if __name__ == '__main__':

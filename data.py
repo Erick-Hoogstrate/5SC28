@@ -1,11 +1,14 @@
 import numpy as np
+from sklearn.model_selection import train_test_split
 import torch
 import pandas as pd
-from typing import Union
+from typing import Union, Tuple
+from dataclasses import dataclass
 
 TRAIN_DATA = r"disc-benchmark-files\training-data.csv"
 
-def load_data( as_tensor:bool=True)->Union[np.ndarray, torch.Tensor]:
+
+def load_data(as_tensor: bool = True) -> Union[np.ndarray, torch.Tensor]:
     """
     Loads training or test data from given files.
 
@@ -26,7 +29,9 @@ def load_data( as_tensor:bool=True)->Union[np.ndarray, torch.Tensor]:
     return x, y
 
 
-def load_narx_data(n_a:int, n_b:int,  as_tensor:bool=True)->Union[np.ndarray, torch.Tensor]:
+def load_narx_data(
+    n_a: int, n_b: int, as_tensor: bool = True
+) -> Tuple[Union[np.ndarray, torch.Tensor], Union[np.ndarray, torch.Tensor]]:
     """
     Loads training or test data from given files, and formats it as a NARX input([X_{k-n_b}, ..., X_{k-1}, Y_{k-n_a}, ... , Y_{k-1}]).
 
@@ -40,10 +45,14 @@ def load_narx_data(n_a:int, n_b:int,  as_tensor:bool=True)->Union[np.ndarray, to
     x_data, y_data
     """
     x, y = load_data(as_tensor)
-    X, y= convert_to_narx(x, y, n_a, n_b, as_tensor)
+    x, y = convert_to_narx(x, y, n_a, n_b, as_tensor)
+
+    return x, y
 
 
-def convert_to_narx(x, y, n_a, n_b, as_tensor:bool=True):
+def convert_to_narx(
+    x, y, n_a, n_b, as_tensor: bool = True
+) -> Tuple[Union[np.ndarray, torch.Tensor], Union[np.ndarray, torch.Tensor]]:
     X = []
     Y = []
     for k in range(max(n_a, n_b), len(x)):
@@ -55,3 +64,27 @@ def convert_to_narx(x, y, n_a, n_b, as_tensor:bool=True):
         X, Y = torch.as_tensor(X), torch.as_tensor(Y)
 
     return X, Y
+
+
+@dataclass
+class GS_Dataset:
+    x_data: np.ndarray = None
+    y_data: np.ndarray = None
+    x_train: torch.Tensor = None
+    y_train: torch.Tensor = None
+    x_val: torch.Tensor = None
+    y_val: torch.Tensor = None
+
+
+def create_gs_dataset(
+    x_data: np.ndarray, y_data: np.ndarray, n_a: int, n_b: int, device: torch.device
+) -> GS_Dataset:
+    x_train, x_val, y_train, y_val = train_test_split(x_data, y_data, shuffle=False)
+    x_train, y_train = convert_to_narx(x_train, y_train, n_a, n_b)
+    x_val, y_val = convert_to_narx(x_val, y_val, n_a, n_b)
+    x_train, x_val, y_train, y_val = [
+        x.to(device)
+        for x in [x_train, x_val, y_train, y_val]
+    ]
+
+    return GS_Dataset(x_data, y_data, x_train, y_train, x_val, y_val)
