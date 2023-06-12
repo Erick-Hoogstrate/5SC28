@@ -4,11 +4,12 @@ import torch
 import pandas as pd
 from typing import Union, Tuple
 from dataclasses import dataclass
+import model
 
 TRAIN_DATA = r"disc-benchmark-files\training-data.csv"
 
 
-def load_data(as_tensor: bool = True) -> Union[np.ndarray, torch.Tensor]:
+def load_data(as_tensor: bool = True) -> Tuple[Union[np.ndarray, torch.Tensor], Union[np.ndarray, torch.Tensor]]:
     """
     Loads training or test data from given files.
 
@@ -74,6 +75,16 @@ class GS_Dataset:
     y_train: torch.Tensor = None
     x_val: torch.Tensor = None
     y_val: torch.Tensor = None
+
+@dataclass
+class GS_Results:
+    best_model: model.Narx = None
+    best_sim_model: model.Narx = None
+    best_nrms: float = None
+    best_sim_nrms: float = None
+    loss_list: list = None
+    nrms_list: list = None
+    sim_nrms_list: list = None
 
 
 def create_gs_dataset(

@@ -1,0 +1,4 @@
+Starting new Grid Search with parameters {'n_a': [5, 9, 13], 'n_b': [20, 25, 30], 'n_layers': [1], 'n_nodes': [10, 30, 50, 100]} 
+Starting run 1 out of 36 
+Checkpoint at epoch 1: n_a=5, n_b=20, n_nodes=10, n_layers=1 
+current pred NRMS: 1.3312812051907081, previous best pred NRMS: inf 
