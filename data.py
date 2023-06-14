@@ -87,7 +87,7 @@ class GS_Results:
     sim_nrms_list: list = None
 
 
-def create_gs_dataset(
+def make_gs_dataset(
     x_data: np.ndarray, y_data: np.ndarray, n_a: int, n_b: int, device: torch.device
 ) -> GS_Dataset:
     x_train, x_val, y_train, y_val = train_test_split(x_data, y_data, shuffle=False)

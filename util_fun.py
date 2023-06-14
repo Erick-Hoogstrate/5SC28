@@ -16,7 +16,7 @@ def calculate_error_nrms(
         y.detach().cpu().numpy() if type(y) == torch.Tensor else y
         for y in [y_predicted, y_true]
     ]
-    nrms = (np.mean((y_predicted - y_true) ** 2) ** 0.5 )/ np.std(y_true)
+    nrms = (np.mean((y_predicted - y_true) ** 2) ** 0.5) / np.std(y_true)
 
     return nrms
 
@@ -46,6 +46,7 @@ def narx_sim_nrms(
         upast = [0] * n_b
         ypast = [0] * n_a
         data_end = n_val_samples
+        skip=0
 
     x_data, y_data = [x[skip:data_end] for x in [x_data, y_data]]
     ylist = []
@@ -91,11 +92,10 @@ def train_narx_simval(
     checkpoints = [*range(0, n_epochs + 1, max(n_epochs // 25, 1))]
     if checkpoints[-1] != n_epochs:
         checkpoints += [n_epochs]
-
+    optimizer = torch.optim.Adam(model.parameters())
     # start training loop
     for epoch in range(n_epochs):
-        optimizer = torch.optim.Adam(model.parameters())
-        loss = torch.mean((model(data.x_train) - data.y_train) ** 2)
+        loss = torch.mean(((model(data.x_train) - data.y_train) ** 2)/torch.std(data.y_train))
         optimizer.zero_grad()
         loss.backward()
         optimizer.step()
@@ -109,23 +109,32 @@ def train_narx_simval(
             nrms_list.append(nrms)
             if nrms < best_nrms:
                 print_log(
-                    f"current pred NRMS: {nrms}, previous best pred NRMS: {best_nrms} \n",
+                    f"current best pred NRMS: {nrms}, previous best pred NRMS: {best_nrms} \n",
                     log_file,
                 )
                 best_nrms = nrms
                 best_model = deepcopy(model)
-
+            else:
+                print_log(
+                    f"current pred NRMS: {nrms}, current best pred NRMS: {best_nrms} \n",
+                    log_file,
+                )
             _, _, _, sim_nrms = narx_sim_nrms(
-                model, n_a, n_b, data.x_data, data.y_data, device
+                model, n_a, n_b, data.x_data, data.y_data, True, device
             )
             sim_nrms_list.append(sim_nrms)
             if sim_nrms < best_sim_nrms:
                 print_log(
-                    f"current sim NRMS: {sim_nrms}, previous best sim NRMS: {best_sim_nrms} \n",
+                    f"current best sim NRMS: {sim_nrms}, previous best sim NRMS: {best_sim_nrms} \n",
                     log_file,
                 )
                 best_sim_nrms = sim_nrms
                 best_sim_model = deepcopy(model)
+            else:
+                print_log(
+                    f"current sim NRMS: {sim_nrms}, current best sim NRMS: {best_sim_nrms} \n",
+                    log_file,
+                )
 
     results = GS_Results(
         best_model,
