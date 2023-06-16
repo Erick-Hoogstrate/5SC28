@@ -3,9 +3,11 @@
 ##
 ## Get latest from https://github.com/github/gitignore/blob/main/VisualStudio.gitignore
 # own added ignores
+test.ipynb
 /.ipynb_checkpoints
 /test/*
 !/test/README.md
+test.ipynb
 
 # User-specific files
 *.rsuser
