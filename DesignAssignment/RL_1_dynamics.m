@@ -36,7 +36,7 @@
 % Efficient Reinforcement Learning Using Gaussian Processes, Appendix C,
 % KIT Scientific Publishing, 2010.
 
-function dz = Sol_3_dynamics(t,z,f)
+function dz = RL_1_dynamics(t,z,f)
 %% Code
 
 l = 0.5;  % [m]      length of pendulum

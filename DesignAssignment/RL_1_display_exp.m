@@ -26,7 +26,7 @@
 %   text2      (optional) text field 2
 %
 
-function Sol_3_display_exp(x, theta, force, cost, text1, text2, M, S)
+function RL_1_display_exp(x, theta, force, cost, text1, text2, M, S)
 %% Code
 
 l = 0.6;

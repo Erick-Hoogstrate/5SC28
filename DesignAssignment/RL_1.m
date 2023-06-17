@@ -25,7 +25,7 @@ flag.plotting=1; % Plotting  information: intensity 0-3
 % - (optional) visualization
 
 % First the enviroment and the actual system is specified 
-Sol_1_settings;                      % Load settings for the cart-pole system
+RL_1_settings;                      % Load settings for the cart-pole system
 
 
 
@@ -53,7 +53,7 @@ for i = 1:N_initial
          set(0,'CurrentFigure',1); 
      end
      clf(1);
-     Sol_1_display_rollout;        % plot experiment (stored in xx, yy)
+     RL_1_display_rollout;        % plot experiment (stored in xx, yy)
    end
 end
 J=N_initial; % Used by the toolbox
@@ -107,6 +107,6 @@ for j = 1:N_episode % Note that the loop varaiable "j" is used in the "display_r
    disp(['controlled trial # ' num2str(j)]);
    if plotting.verbosity > 0;      % visualization of trajectory
      if ~ishandle(1); figure(1); else set(0,'CurrentFigure',1); end; clf(1);
-     Sol_1_display_rollout;
+     RL_1_display_rollout;
    end
 end

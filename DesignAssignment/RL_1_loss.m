@@ -45,7 +45,7 @@
 % 5. Calculate loss and derivatives 
 % 6. Normalization
 
-function [L, dLdm, dLds, S2] = Sol_3_loss(cost, m, s)
+function [L, dLdm, dLds, S2] = RL_1_loss(cost, m, s)
 %% 1. Argument check
 % If not all parameters are defined then set them to default values
 

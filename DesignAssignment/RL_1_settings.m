@@ -61,23 +61,23 @@ odei = [1 2 3 4];            % varibles for the ode solver
 
 augi = [];                   % variables to be augmented
 
-dyno = [1 2 3 4];            % variables to be predicted (and known to loss)
+dyno = [1 2];            % variables to be predicted (and known to loss)
 % The predictive dimensions of the dynamics GP model are stored in dyno
 
-angi = [4];                  % angle variables
+angi = [2];                  % angle variables
 % The indices in angi indicate which variables are angles. We represent
 % these angle variables in the complex plane to exploit wrapping.
 
-dyni = [1 2 3 5 6];          % variables that serve as inputs to the dynamics GP
+dyni = [1 3 4];          % variables that serve as inputs to the dynamics GP
 % Describes which variables from the auxiliary state vector in Equation (4.1) 
 % are used as the training inputs for the GP dynamics model. Note that we use
 % the complex representation [sin ??, cos ??] instead of ??.
 
-poli = [1 2 3 5 6];          % variables that serve as inputs to the policy
+poli = [1 3 4];          % variables that serve as inputs to the policy
 % Describe which state variables from the auxiliary state vector are used 
 % as inputs to the policy.
 
-difi = [1 2 3 4];            % variables that are learned via differences
+difi = [1 2];            % variables that are learned via differences
 % difi indices are a subset of dyno and contain the indices of the state 
 % variables for which the GP training targets are differences
 
@@ -123,7 +123,7 @@ policy.fcn = @(policy,m,s)conCat(@congp,@gSat,policy,m,s);  % controller structu
 policy.maxU = 10;                                         % defines input constraints, limits in the squashing function
 
 
-[mm ss cc] = gTrig(mu0, S0, plant.angi);                  % augment the original state by [sin ??, cos ??] by means of gTrig.m, where the indices of the angles ?? are stored in plant.angi.
+[mm ss cc] = gTrig(mu0, S0, angi);                  % augment the original state by [sin ??, cos ??] by means of gTrig.m, where the indices of the angles ?? are stored in plant.angi.
 % We compute a Gaussian approximation to the joint distribution p(x,sin??,cos??).
 
 mm = [mu0; mm];                                           % append the mean, covariance, etc. with the moments of the join distribution for the augment state
@@ -153,7 +153,7 @@ cost.gamma = 1;                            % discount factor (as in standard RL)
 cost.p = 0.5;                              % length of pendulum, to compute the Euclidean distance of the tip of the pendulum from the desired location in the inverted position
 cost.width = 0.25;                         % cost function width, rule of thumb: cost.width= (mu0 ??? xtarget)/10
 cost.expl =  0.0;                          % exploration parameter (UCB), Negative values encourage explo- ration, positive values encourage the policy staying in regions with good predictive performance. We set the value to 0 in order to disable any kind of additional exploration or exploitation.
-cost.angle = plant.angi;                   % indices of angles, tells the cost function, which indices of the state are angles. 
+cost.angle = angi;                   % indices of angles, tells the cost function, which indices of the state are angles. 
 cost.target = [0 0 0 pi]';                 % target state [set-point control]
 
 %% 6. Dynamics model structure
