@@ -16,6 +16,7 @@ class UnbalancedDisk(gym.Env):
                     0  = starting location
     '''
     def __init__(self, umax=3., dt = 0.025):
+        print("Running from folder")
         ############# start do not edit  ################
         self.omega0 = 11.339846957335382
         self.delta_th = 0
@@ -37,8 +38,8 @@ class UnbalancedDisk(gym.Env):
  
 
         # change anything here (compilable with the exercise instructions)
-        self.action_space = spaces.Box(low=-umax,high=umax,shape=tuple()) #continuous
-        # self.action_space = spaces.Discrete(5) #discrete
+        # self.action_space = spaces.Box(low=-umax,high=umax,shape=tuple()) #continuous
+        self.action_space = spaces.Discrete(9) #discrete
         low = [-float('inf'),-40] 
         high = [float('inf'),40]
         self.observation_space = spaces.Box(low=np.array(low,dtype=np.float32),high=np.array(high,dtype=np.float32),shape=(2,))
@@ -167,6 +168,43 @@ class UnbalancedDisk(gym.Env):
             pygame.quit()
             self.isopen = False
             self.viewer = None
+
+    def change_reward_function(self, new_reward_function):
+        self.reward_fun = new_reward_function
+
+    def set_discrete_values(self, discrete_size, minmax, div, rnd):
+        self.action_space = spaces.Discrete(discrete_size)
+
+        if discrete_size < 3:
+            raise ValueError("discrete_size must be at least 3.")
+        if discrete_size % 2 == 0:
+            raise ValueError("discrete_size must be odd.")
+        
+        values = [-minmax]
+        initstep = minmax/div  # Calculate the initial step size
+        
+        step = initstep
+        for i in range(1, int((discrete_size - 1)/2)):
+            values.append(round(-step,rnd))
+            step = step / div
+            
+        values.append(0)
+        step = step * div
+            
+        for i in range(1, int((discrete_size - 1)/2)):
+            values.append(round(step,rnd))
+            step = step * div
+        
+        values.append(minmax)
+
+        self.discrete_values = values
+        print(f'Discrete value set changed to {values}')
+
+    def set_discrete_values_manual(self, values):
+        
+        self.action_space = spaces.Discrete(len(values))
+        self.discrete_values = values
+        print(f'Discrete value set changed to {values}')
 
 
 class UnbalancedDisk_sincos(UnbalancedDisk):
