@@ -2,11 +2,10 @@
 
 Changes to be made to your file:
 
-* Add to imports (Preferably at the top):
+* Add to imports at the very top):
 \
 \
 import sys \
 sys.path.append('gym-unbalanced-disk/gym_unbalanced_disk/') \
-import gym_unbalanced_disk
-\
-\
+
+
