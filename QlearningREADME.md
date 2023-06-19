@@ -35,4 +35,11 @@ def set_discrete_values(self, discrete_size, minmax, div, rnd):
         self.discrete_values = values
         print(f'Discrete value set changed to {values}')
 
+
+    def set_discrete_values_manual(self, values):
+        
+        self.action_space = spaces.Discrete(len(values))
+        self.discrete_values = values
+        print(f'Discrete value set changed to {values}')
+
 as a function in the UnbalancedDisk.py file
