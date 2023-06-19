@@ -52,8 +52,8 @@ class UnbalancedDisk(gym.Env):
 
     def step(self, action):
         #convert action to u
-        self.u = action #continuous
-        # self.u = [-3,-1,0,1,3][action] #discrate
+        # self.u = action #continuous
+        self.u = self.discrete_values[action] #discrate
         # self.u = [-3,3][action] #discrate
 
         ##### Start Do not edit ######
