@@ -94,8 +94,8 @@ class UnbalancedDisk_exp(gym.Env):
             raise ValueError('not connected, use env.try_connect')
         
         #convert action to u
-        self.u = action #continuous
-        # self.u = [-3,-1,0,1,3][action] #discrate
+#         self.u = action #continuous
+        self.u = self.discrete_values[action] #discrate
         # self.u = [-3,3][action] #discrate
 
         ##### Start Do not edit ######
@@ -245,6 +245,43 @@ class UnbalancedDisk_exp(gym.Env):
             eng_active = False
             self.connected = False
         self.close_viewer()
+        
+    def change_reward_function(self, new_reward_function):
+        self.reward_fun = new_reward_function
+
+    def set_discrete_values(self, discrete_size, minmax, div, rnd):
+        self.action_space = spaces.Discrete(discrete_size)
+
+        if discrete_size < 3:
+            raise ValueError("discrete_size must be at least 3.")
+        if discrete_size % 2 == 0:
+            raise ValueError("discrete_size must be odd.")
+        
+        values = [-minmax]
+        initstep = minmax/div  # Calculate the initial step size
+        
+        step = initstep
+        for i in range(1, int((discrete_size - 1)/2)):
+            values.append(round(-step,rnd))
+            step = step / div
+            
+        values.append(0)
+        step = step * div
+            
+        for i in range(1, int((discrete_size - 1)/2)):
+            values.append(round(step,rnd))
+            step = step * div
+        
+        values.append(minmax)
+
+        self.discrete_values = values
+        print(f'Discrete value set changed to {values}')
+
+    def set_discrete_values_manual(self, values):
+        
+        self.action_space = spaces.Discrete(len(values))
+        self.discrete_values = values
+        print(f'Discrete value set changed to {values}')
 
 class UnbalancedDisk_exp_sincos(UnbalancedDisk_exp):
     """docstring for UnbalancedDisk_exp_sincos"""
