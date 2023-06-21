@@ -47,6 +47,7 @@ class UnbalancedDisk(gym.Env):
 
         if reward_fun is None:
             self.reward_fun = lambda self: np.exp(-(self.th%(2*np.pi)-np.pi)**2/(2*(np.pi/7)**2)) #example reward function, change this!
+            print('Standard Reward function used')
 
         
         self.viewer = None
