@@ -1,14 +1,13 @@
 % 1. Initialization
 clear all; close all; clc;
 load("pendulum_23_H40.mat")
+% load("pendulum_20_H16.mat")
 load('parameters.mat')
 
 
 dt = 0.025;                      % [s] sampling time
-% T = 4;                         % [s] prediction time
-% H = ceil(T/dt);                % prediction steps (optimization horizon)
-% mu0 = [0 0]';                  % initial state mean
-% S0 = 0.01*eye(2);              % initial state variance
+Runtime = 10;                     % [s] prediction time
+H = ceil(T/dt);                % prediction steps (optimization horizon)
 umax = 3;
 omega = 0;
 theta = 0;
@@ -17,7 +16,7 @@ theta = 0;
 
 state = init_state_disk();
 
-for i = 1:500
+for i = 1:H
     thetas(i) = state.theta;
     
     s = [omega sin(theta) cos(theta)]';
@@ -25,7 +24,7 @@ for i = 1:500
 
     u(u>umax) = umax;                               % Clip input signal
     u(-umax>u) = -umax;
-    
+    u=3;
     state = unbalanced_disk(state, u, dt);
 end
 plot(thetas)
