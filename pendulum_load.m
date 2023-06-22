@@ -32,10 +32,7 @@ for j = 1:N
   t = (0:Ts:Ts*(N-1))';
 
   %% Generate control input, feel free to change anything here
-  u = 2*rand(N,1)-1;
-  u = filter([0 0.1],[1 -0.9],u);                 % Filtered random input
-  u_filt_amp = max(-min(u),max(u));               % Compute amplitude of the input signal
-  u = (u./u_filt_amp)*umax*2.0;                   % Rescale u accordinglly
+  u = policy.fcn(policy,s(poli),zeros(length(poli)));                 % Rescale u accordinglly
   % plot(t,u)
 
   % Keep this part the same to ensure that the input signal does not exceed umax
