@@ -61,12 +61,12 @@ difi = [1 2];               % variables that are learned via differences
 % 2. Set up the scenario
 dt = 0.025;                      % [s] sampling time
 T = 4;                         % [s] prediction time
-H = ceil(T/dt);                % prediction steps (optimization horizon)
+dd = ceil(T/dt);                % prediction steps (optimization horizon)
 mu0 = [0 0]';                  % initial state mean
 S0 = 0.01*eye(2);              % initial state variance
-N = 10;                        % number of policy optimizations
-J = 1;                         % no. of inital training rollouts (of length H)
-K = 1;                         % number of initial states for which we optimize
+N = 50;                        % number of policy optimizations
+J = 10;                         % no. of inital training rollouts (of length H)
+K = 3;                         % number of initial states for which we optimize
 nc = 10;                       % size of controller training set
 
 % 3. Set up the plant structure

@@ -32,6 +32,10 @@
 % Last modified: 2013-03-18
 
 function dz = dynamics_pendulum(t,z,u)
+global MOPSconnected
+global H
+global k
+global Ts
 %% Code
 % 
 % omega0 = 11.339846957335382;
@@ -47,9 +51,10 @@ function dz = dynamics_pendulum(t,z,u)
 
 
     %% Generate control input, feel free to change anything here
-    % Keep this part the same to ensure that the input signal does not exceed umax
-    u(u>umax) = umax;                               % Clip input signal
-    u(-umax>u) = -umax;
+%     % Keep this part the same to ensure that the input signal does not exceed umax
+%     umax=3;
+%     u(u>umax) = umax;                               % Clip input signal
+%     u(-umax>u) = -umax;
     % plot(t,u)
 
     %% Real-time loop
@@ -65,8 +70,11 @@ function dz = dynamics_pendulum(t,z,u)
     td(k) = toc;                                % Record time spent on the calculations
     while toc < Ts; end                         % Wait for tick
     tic;                                        % Reset Matlab's tic-toc timer
-
+    
+    
     dz = zeros(2,1);
+%     disp(MOPS_sensors(3,:), MOPS_sensors(4,:))
     dz(1) = MOPS_sensors(4,:);
     dz(2) = MOPS_sensors(3,:);
+
 

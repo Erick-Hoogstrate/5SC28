@@ -16,7 +16,7 @@
 
 % 1. Initialization
 clear all; close all;
-% settings_pendulum;            % load scenario-specific settings
+settings_pendulum;            % load scenario-specific settings
 basename = 'pendulumSetup_';       % filename used for saving data
 
 
@@ -32,6 +32,10 @@ t = (0:Ts:Ts*(N-1))';
     data = zeros(9,length(t));
 
 %% Initialize real-time API
+global MOPSconnected
+global H
+global k
+global Ts
 try
     fugiboard('CloseAll');                      % Close port
     H = fugiboard('Open', 'mops1');             % Open port
@@ -48,11 +52,13 @@ catch
     error('Warning: the setup is not connected to the computer.');
     MOPSconnected = 0;
 end
-
+dt = 0.025;                    % [s] sampling time
+T = 4;                         % [s] prediction time
+dd = ceil(T/dt);                % prediction steps (optimization horizon)
 % 2. Initial J random rollouts
 for jj = 1:J
   [xx, yy, realCost{jj}, latent{jj}] = ...
-    rollout(gaussian(mu0, S0), struct('maxU',policy.maxU), H, plant, cost);
+    rollout(gaussian(mu0, S0), struct('maxU',policy.maxU), dd, plant, cost);
   x = [x; xx]; y = [y; yy];       % augment training sets for dynamics model
   if plotting.verbosity > 0;      % visualization of trajectory
     if ~ishandle(1); figure(1); else set(0,'CurrentFigure',1); end; clf(1);
@@ -76,7 +82,7 @@ for j = 1:N
 end
 
 %% Close real-time API
-if MOPSconnected
-    fugiboard('Write', H, 0, 1, 0, 0.0);        % Reset actuator
-    fugiboard('CloseAll');                      % Close the port
-end
+% if MOPSconnected
+%     fugiboard('Write', H, 0, 1, 0, 0.0);        % Reset actuator
+%     fugiboard('CloseAll');                      % Close the port
+% end
