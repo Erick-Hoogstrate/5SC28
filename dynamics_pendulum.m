@@ -33,14 +33,40 @@
 
 function dz = dynamics_pendulum(t,z,u)
 %% Code
+% 
+% omega0 = 11.339846957335382;
+% %%delta_th = 0.;
+% gamma = 1.3328339309394384;
+% Ku = 28.136158407237073;
+% Fc = 6.062729509386865;
+% coulomb_omega = 0.001;
+% 
+% dz = zeros(2,1);
+% dz(1) = (-(omega0)^2)*sin(z(2))-gamma*z(1)-Fc*tanh(z(1)/coulomb_omega)+Ku*u(t);
+% dz(2) = z(1);
 
-omega0 = 11.339846957335382;
-%%delta_th = 0.;
-gamma = 1.3328339309394384;
-Ku = 28.136158407237073;
-Fc = 6.062729509386865;
-coulomb_omega = 0.001;
 
-dz = zeros(2,1);
-dz(1) = (-(omega0)^2)*sin(z(2))-gamma*z(1)-Fc*tanh(z(1)/coulomb_omega)+Ku*u(t);
-dz(2) = z(1);
+    %% Generate control input, feel free to change anything here
+    % Keep this part the same to ensure that the input signal does not exceed umax
+    u(u>umax) = umax;                               % Clip input signal
+    u(-umax>u) = -umax;
+    % plot(t,u)
+
+    %% Real-time loop
+    tic;                                            % Reset Matlab's tic-toc timer                                                   
+    if MOPSconnected
+        fugiboard('Write',H,0,1,u(k),0);        % Send control input to process
+        MOPS_sensors = fugiboard('Read',H);     % Read sensor data
+%         data(:,k) = MOPS_sensors;
+    else
+        y(k) = 0;
+    end
+
+    td(k) = toc;                                % Record time spent on the calculations
+    while toc < Ts; end                         % Wait for tick
+    tic;                                        % Reset Matlab's tic-toc timer
+
+    dz = zeros(2,1);
+    dz(1) = MOPS_sensors(4,:);
+    dz(2) = MOPS_sensors(3,:);
+
