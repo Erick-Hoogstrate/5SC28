@@ -14,7 +14,6 @@ t = (0:Ts:Ts*(N-1))';
 %%u_filt_amp = max(-min(u),max(u));               % Compute amplitude of the input signal
 %%u = (u./u_filt_amp)*umax*2.0;                   % Rescale u accordinglly
 poli = [1 3 4];
-u(k) = policy.fcn(policy,s(poli),zeros(length(poli)));
 % plot(t,u)
 
 % Keep this part the same to ensure that the input signal does not exceed umax
@@ -48,8 +47,9 @@ tic;                                            % Reset Matlab's tic-toc timer
 for k = 1 : N                                   % RT loop                                                        
     if MOPSconnected
         na = length(data(3,:))
-        s = data(i,[3 4])'; sa = gTrig(s, zeros(length(s)), data(3,;)); s = [s; sa];
-        data(i, end-2*na+1:end) = s(end-2*na+1:end);
+        s = data(k,[3 4])'; sa = gTrig(s, zeros(length(s)), data(3,;)); s = [s; sa];
+        data(k, end-2*na+1:end) = s(end-2*na+1:end);
+        u(k) = policy.fcn(policy,s(poli),zeros(length(poli)));
         fugiboard('Write',H,0,1,u(k),0);        % Send control input to process
         MOPS_sensors = fugiboard('Read',H);     % Read sensor data
         data(:,k) = MOPS_sensors;
