@@ -57,4 +57,5 @@ tic;                                        % Reset Matlab's tic-toc timer
 
 dz = zeros(2,1);
 dz(1) = (MOPS_sensors(4,:) - z.omega) / dt;
+% dz(1) = MOPS_sensors(4,:);
 dz(2) = MOPS_sensors(3,:);
