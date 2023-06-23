@@ -13,10 +13,10 @@ class Narx(nn.Module):
         super().__init__()
 
         # add input, hidden, and output layers
-        layers = [nn.Linear(n_in, n_hidden_nodes), nn.Sigmoid()]
-        for i in range(n_hidden_layers):
+        layers = [nn.Linear(n_in, n_hidden_nodes), nn.LeakyReLU()]
+        for _ in range(n_hidden_layers):
             layers.append(nn.Linear(n_hidden_nodes, n_hidden_nodes))
-            layers.append(nn.ReLU())
+            layers.append(nn.LeakyReLU())
         layers += [nn.Linear(n_hidden_nodes, 1)]
         layers = [layer.double() for layer in layers]
 

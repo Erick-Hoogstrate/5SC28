@@ -98,8 +98,8 @@ def train_narx_simval(
 
     # initialise checkpoints for validation
     checkpoints = [*range(0, n_epochs + 1, max(n_epochs // 25, 1))]
-    if checkpoints[-1] != n_epochs:
-        checkpoints += [n_epochs]
+    if checkpoints[-1] != (n_epochs-1):
+        checkpoints += [n_epochs-1]
     optimizer = torch.optim.Adam(model.parameters())
     # start training loop
     for epoch in range(n_epochs):

@@ -6,10 +6,12 @@ from typing import Union, Tuple
 from dataclasses import dataclass
 import model
 
-TRAIN_DATA = r"disc-benchmark-files\training-data.csv"
+TRAIN_DATA = r"..\..\__00_disc-benchmark-files\training-data.npz"
 
 
-def load_data(as_tensor: bool = True) -> Tuple[Union[np.ndarray, torch.Tensor], Union[np.ndarray, torch.Tensor]]:
+def load_data(
+    as_tensor: bool = True,
+) -> Tuple[Union[np.ndarray, torch.Tensor], Union[np.ndarray, torch.Tensor]]:
     """
     Loads training or test data from given files.
 
@@ -20,12 +22,12 @@ def load_data(as_tensor: bool = True) -> Tuple[Union[np.ndarray, torch.Tensor], 
     x_data, y_data
     """
 
-    data = pd.read_csv(TRAIN_DATA).to_numpy()
+    data = np.load(TRAIN_DATA)
+
+    x, y = data["th"], data["u"]
 
     if as_tensor:
-        data = torch.tensor(data)
-
-    x, y = data[:, 0], data[:, 1]
+        x, y = torch.tensor(x), torch.tensor(y)
 
     return x, y
 
@@ -78,6 +80,7 @@ class GS_Dataset:
     x_val: torch.Tensor = None
     y_val: torch.Tensor = None
 
+
 @dataclass
 class GS_Results:
     best_model: model.Narx = None
@@ -92,12 +95,15 @@ class GS_Results:
 def make_gs_dataset(
     x_data: np.ndarray, y_data: np.ndarray, n_a: int, n_b: int, device: torch.device
 ) -> GS_Dataset:
-    x_train, x_data_val, y_train, y_data_val = train_test_split(x_data, y_data, shuffle=False)
+    x_train, x_data_val, y_train, y_data_val = train_test_split(
+        x_data, y_data, shuffle=False
+    )
     x_train, y_train = convert_to_narx(x_train, y_train, n_a, n_b)
     x_val, y_val = convert_to_narx(x_data_val, y_data_val, n_a, n_b)
     x_train, x_val, y_train, y_val = [
-        x.to(device)
-        for x in [x_train, x_val, y_train, y_val]
+        x.to(device) for x in [x_train, x_val, y_train, y_val]
     ]
 
-    return GS_Dataset(x_data, y_data,x_data_val, y_data_val,x_train, y_train, x_val, y_val)
+    return GS_Dataset(
+        x_data, y_data, x_data_val, y_data_val, x_train, y_train, x_val, y_val
+    )
