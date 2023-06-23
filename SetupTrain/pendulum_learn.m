@@ -9,11 +9,6 @@ umax = 3;                                       % Max voltage
 t = (0:Ts:Ts*(Nlength-1))';
 
 
-% Keep this part the same to ensure that the input signal does not exceed umax
-u(u>umax) = umax;                               % Clip input signal
-u(-umax>u) = -umax;
-% plot(t,u)
-
 %% History variables
 data = zeros(9,length(t));
 
@@ -34,6 +29,11 @@ catch
     error('Warning: the setup is not connected to the computer.');
     MOPSconnected = 0;
 end
+
+% Keep this part the same to ensure that the input signal does not exceed umax
+u(u>umax) = umax;                               % Clip input signal
+u(-umax>u) = -umax;
+% plot(t,u)
 
 %% Real-time loop
 tic;                                            % Reset Matlab's tic-toc timer
