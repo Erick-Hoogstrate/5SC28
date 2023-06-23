@@ -4,6 +4,7 @@ import numpy as np
 from data import GS_Dataset, GS_Results
 from model import Narx
 from typing import Tuple
+from os import path
 
 
 DEVICE = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
@@ -153,3 +154,9 @@ def print_log(msg: str, log_file: str = None) -> None:
     if log_file is not None:
         with open(log_file, "a") as f:
             f.write(msg)
+
+def make_filename(filename,fileext=''):
+    i = 0
+    while path.exists(filename + str(i) + fileext):
+        i += 1
+    return filename + str(i) + fileext

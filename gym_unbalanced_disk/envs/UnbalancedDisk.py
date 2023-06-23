@@ -15,7 +15,7 @@ class UnbalancedDisk(gym.Env):
                     |
                     0  = starting location
     '''
-    def __init__(self, umax=3., dt = 0.025, reward_fun=None, th_noise_scale=1e-3, omega_noise_scale=1e-3):
+    def __init__(self, umax=3., dt = 0.025, reward_fun=None, th_noise_scale=1e-3, omega_noise_scale=1e-3, obs_noise_scale=1e-3):
         ############# start do not edit  ################
         self.omega0 = 11.339846957335382
         self.delta_th = 0
@@ -44,6 +44,7 @@ class UnbalancedDisk(gym.Env):
         self.observation_space = spaces.Box(low=np.array(low,dtype=np.float32),high=np.array(high,dtype=np.float32),shape=(2,))
         self.th_noise_scale=th_noise_scale
         self.omega_noise_scale = omega_noise_scale
+        self.obs_noise_scale=obs_noise_scale
         self.reward_fun=reward_fun
 
         if reward_fun is None:
@@ -83,8 +84,8 @@ class UnbalancedDisk(gym.Env):
         return self.get_obs()
 
     def get_obs(self):
-        self.th_noise = self.th + np.random.normal(loc=0,scale=1e-3) #do not edit
-        self.omega_noise = self.omega + np.random.normal(loc=0,scale=1e-3) #do not edit
+        self.th_noise = self.th + np.random.normal(loc=0,scale=self.obs_noise_scale) #do not edit
+        self.omega_noise = self.omega + np.random.normal(loc=0,scale=self.obs_noise_scale) #do not edit
         return np.array([self.th_noise, self.omega_noise])
 
     def render(self, mode='human'):
