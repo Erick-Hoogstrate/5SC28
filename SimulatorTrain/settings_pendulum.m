@@ -1,24 +1,3 @@
-%% settings_pendulum.m
-% *Summary:* Script set up the pendulum scenario
-%
-% Copyright (C) 2008-2013 by 
-% Marc Deisenroth, Andrew McHutchon, Joe Hall, and Carl Edward Rasmussen.
-%
-% Last modified: 2013-05-24
-%
-%% High-Level Steps
-% # Define state and important indices
-% # Set up scenario
-% # Set up the plant structure
-% # Set up the policy structure
-% # Set up the cost structure
-% # Set up the GP dynamics model structure
-% # Parameters for policy optimization
-% # Plotting verbosity
-% # Some array initializations
-
-%% Code
-
 warning('off','all'); format short; format compact; 
 
 % include some paths
@@ -40,6 +19,7 @@ rand('seed',5); randn('seed',13);
 %  3  sin(theta)    complex representation ...
 %  4  cos(theta)    ... of angle of pendulum
 %  5  u             torque applied to the pendulum
+%  6  signal        signal indicating the target position
 
 % 1b. Important indices
 % odei  indicies for the ode solver
@@ -55,11 +35,11 @@ augi = [];                  % variables to be augmented
 dyno = [1 2];               % variables to be predicted (and known to loss)
 angi = [2];                 % angle variables
 dyni = [1 3 4];             % variables that serve as inputs to the dynamics GP
-poli = [1 3 4];             % variables that serve as inputs to the policy
+poli = [1 3 4 6];           % variables that serve as inputs to the policy
 difi = [1 2];               % variables that are learned via differences
 
 % 2. Set up the scenario
-dt = 0.025;                      % [s] sampling time
+dt = 0.025;                    % [s] sampling time
 T = 4;                         % [s] prediction time
 H = ceil(T/dt);                % prediction steps (optimization horizon)
 mu0 = [0 0]';                  % initial state mean
@@ -106,7 +86,7 @@ cost.p = 1.0;                                        % length of pendulum
 cost.width = 0.5;                                    % cost function width
 cost.expl = 0;                                       % exploration parameter
 cost.angle = plant.angi;                             % angle variables in cost
-cost.target = [0 pi]';                               % target state
+cost.target = [0 pi-deg2rad(10); 0 pi; 0 pi+deg2rad(10)]';                               % target state
 
 
 % 6. Set up the GP dynamics model structure

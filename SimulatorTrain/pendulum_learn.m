@@ -1,19 +1,3 @@
-%% pendulum_learn.m
-% *Summary:* Script to learn a controller for the pendulum swingup
-%
-% Copyright (C) 2008-2013 by
-% Marc Deisenroth, Andrew McHutchon, Joe Hall, and Carl Edward Rasmussen.
-%
-% Last modified: 2013-03-27
-%
-%% High-Level Steps
-% # Load parameters
-% # Create J initial trajectories by applying random controls
-% # Controlled learning (train dynamics model, policy learning, policy
-% application)
-
-%% Code
-
 % 1. Initialization
 clear all; close all;
 settings_pendulum;            % load scenario-specific settings
