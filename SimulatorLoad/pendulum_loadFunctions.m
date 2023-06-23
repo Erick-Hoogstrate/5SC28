@@ -1,9 +1,6 @@
 % 1. Initialization
 clear all; close all; clc;
-% load("pendulum_23_H40.mat")
-% load("pendulum_20_H16.mat")
 load("pendulum_8_H160.mat")
-% load("pendulumSim_15_H160.mat")
 
 dt = 0.025;                      % [s] sampling time
 Runtime = 4;                     % [s] prediction time
