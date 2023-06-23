@@ -128,7 +128,7 @@ def train_narx_simval(
                     log_file,
                 )
             _, _, _, sim_nrms = narx_sim_nrms(
-                model, n_a, n_b, data.x_data, data.y_data, True, device
+                model, n_a, n_b, data.x_data_val, data.y_data_val, True, device
             )
             sim_nrms_list.append(sim_nrms)
             if sim_nrms < best_sim_nrms:
