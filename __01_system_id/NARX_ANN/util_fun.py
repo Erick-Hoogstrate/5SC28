@@ -1,20 +1,10 @@
-<<<<<<< HEAD
-import torch
-import numpy as np
-
-
-def calculate_error_nrms(y_predicted: torch.Tensor or np.ndarray, y_true: torch.Tensor or np.ndarray) -> float:
-    y_predicted, y_true = [y.detach().cpu().numpy() if type(y) == torch.Tensor else y for y in [y_predicted, y_true]]
-    nrms = np.mean((y_predicted - y_true) ** 2) ** 0.5 / np.std(y_true)
-
-    return nrms
-=======
 from copy import deepcopy
 import torch
 import numpy as np
 from data import GS_Dataset, GS_Results
 from model import Narx
 from typing import Tuple
+from os import path
 
 
 DEVICE = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
@@ -42,6 +32,13 @@ def narx_sim_nrms(
     device: torch.device = DEVICE,
     n_val_samples: int = 2000,
 ) -> Tuple[np.ndarray, np.ndarray, np.ndarray, float]:
+    """
+        output:
+            x_data: np.ndarray: true x data used
+            y_data: np.ndarray: true y data used
+            ylist: np.ndarray: predicted y values
+            nrms: float: prediction nrms
+    """
     # convert tensors to ndarrays if applicable
     x_data, y_data = [
         x.detach().cpu().numpy() if type(x) == torch.Tensor else x
@@ -131,7 +128,7 @@ def train_narx_simval(
                     log_file,
                 )
             _, _, _, sim_nrms = narx_sim_nrms(
-                model, n_a, n_b, data.x_data, data.y_data, True, device
+                model, n_a, n_b, data.x_data_val, data.y_data_val, True, device
             )
             sim_nrms_list.append(sim_nrms)
             if sim_nrms < best_sim_nrms:
@@ -164,4 +161,9 @@ def print_log(msg: str, log_file: str = None) -> None:
     if log_file is not None:
         with open(log_file, "a") as f:
             f.write(msg)
->>>>>>> 2cf30b2c88046bc805d0ac3f72f38a7045ab0476
+
+def make_filename(filename,fileext=''):
+    i = 0
+    while path.exists(filename + str(i) + fileext):
+        i += 1
+    return filename + str(i) + fileext

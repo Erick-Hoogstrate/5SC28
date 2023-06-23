@@ -1,15 +1,9 @@
 from matplotlib import pyplot as plt
 import numpy as np
 import torch
-from data import load_narx_data
+from torch import nn
 from sklearn.gaussian_process import GaussianProcessRegressor
 from sklearn.gaussian_process.kernels import RBF, WhiteKernel, ExpSineSquared, Matern, Product
-
-n_a, n_b = 2, 2
-
-Xtrain,Ytrain = load_narx_data(n_a, n_b, section="train", split=[0.6, 0.2, 0.2], as_tensor=True)
-Xval,Yval = load_narx_data(n_a, n_b, section="validation", split=[0.6, 0.2, 0.2], as_tensor=True)
-Xtest,Ytest = load_narx_data(n_a, n_b, section="test", split=[0.6, 0.2, 0.2], as_tensor=True)
 
 DEVICE = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
