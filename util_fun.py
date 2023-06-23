@@ -31,6 +31,13 @@ def narx_sim_nrms(
     device: torch.device = DEVICE,
     n_val_samples: int = 2000,
 ) -> Tuple[np.ndarray, np.ndarray, np.ndarray, float]:
+    """
+        output:
+            x_data: np.ndarray: true x data used
+            y_data: np.ndarray: true y data used
+            ylist: np.ndarray: predicted y values
+            nrms: float: prediction nrms
+    """
     # convert tensors to ndarrays if applicable
     x_data, y_data = [
         x.detach().cpu().numpy() if type(x) == torch.Tensor else x
