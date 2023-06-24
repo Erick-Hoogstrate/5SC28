@@ -9,6 +9,11 @@ def calculate_error_nrms(y_predicted: torch.Tensor or np.ndarray, y_true: torch.
 
     return nrms*100 if as_percentage else nrms
 
+def calculate_average_std(Y_std):
+    sum_squared = np.sum(np.square(Y_std))
+    average_std = np.sqrt(sum_squared/len(Y_std))
+    return average_std
+
 
 def use_NARX_model_in_simulation(ulist, f, na, nb):
     #init upast and ypast as lists.
@@ -31,16 +36,15 @@ def use_NARX_model_in_simulation(ulist, f, na, nb):
     return np.array(ylist) #return result
 
 
-def plot_NRMS_Pred_vs_Sim(NRMS_pred, NRMS_sim, na_list, nb_list): # Plot results for validation data
-    fontsize=15
-    fig = plt.figure(figsize=(15, 5),layout='constrained')
+def plot_NRMS_Pred_vs_Sim(NRMS_pred, NRMS_sim, na_list, nb_list, fontsize=30, figsize=(15, 5), Save=False): # Plot results for validation data
+    fig = plt.figure(figsize=figsize,layout='constrained')
     ax1=fig.add_subplot(121)
-    ax1.imshow(NRMS_pred, interpolation='none', norm='log')
     ax2=fig.add_subplot(122)
-    ax2.imshow(NRMS_sim, interpolation='none', norm='log')
-    ax1.set_title('Prediction NRMS',fontsize=fontsize)
-    ax2.set_title('Simulation NRMS',fontsize=fontsize)
-    fig.suptitle('Prediction and simulation validation NRMS for different combinations of na and nb', fontsize=fontsize+10)
+    img1 = ax1.imshow(NRMS_pred, interpolation='none')
+    img2 = ax2.imshow(NRMS_sim, interpolation='none')
+    ax1.set_title("Prediction NRMS", fontsize=fontsize)
+    ax2.set_title("Simulation NRMS", fontsize=fontsize)
+#     fig.suptitle('Prediction and simulation validation NRMS for different combinations of na and nb', fontsize=fontsize+10)
     ax1.set_ylabel('na',fontsize=fontsize)
     ax1.set_xlabel('nb',fontsize=fontsize)
     ax2.set_xlabel('nb',fontsize=fontsize)
@@ -48,6 +52,14 @@ def plot_NRMS_Pred_vs_Sim(NRMS_pred, NRMS_sim, na_list, nb_list): # Plot results
     ax1.set_xticks([*range(len(nb_list))],nb_list)
     ax2.set_yticklabels([0]+na_list)
     ax2.set_xticks([*range(len(nb_list))],nb_list)
+    cbar1=plt.colorbar(img1,shrink=0.43, ticks = np.linspace(np.min(NRMS_pred), np.max(NRMS_pred), 5))
+    cbar2=plt.colorbar(img2,shrink=0.43, ticks = np.linspace(np.min(NRMS_sim), np.max(NRMS_sim), 5))
+    cbar1.ax.set_yticklabels(np.round(np.linspace(np.min(NRMS_pred), np.max(NRMS_pred), 5), 2))
+    cbar2.ax.set_yticklabels(np.round(np.linspace(np.min(NRMS_sim), np.max(NRMS_sim), 5), 2))
+    
+    if Save:
+        fig.savefig('NARX_GP_GS.eps', format='eps', bbox_inches='tight')
+        fig.savefig('NARX_GP_GS.svg', bbox_inches='tight')
 
     params = np.zeros((len(na_list), len(nb_list), 2))
     for i, n_a in enumerate(na_list):
