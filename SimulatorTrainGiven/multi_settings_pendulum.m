@@ -64,10 +64,10 @@ T = 4;                         % [s] prediction time
 H = ceil(T/dt);                % prediction steps (optimization horizon)
 mu0 = [0 0]';                  % initial state mean
 S0 = 0.01*eye(2);              % initial state variance
-N = 50;                        % number of policy optimizations
-J = 10;                         % no. of inital training rollouts (of length H)
-K = 3;                         % number of initial states for which we optimize
-nc = 10;                       % size of controller training set
+N = 10;                        % number of policy optimizations
+J = 3;                         % no. of inital training rollouts (of length H)
+K = 2;                         % number of initial states for which we optimize
+nc = 5;                       % size of controller training set
 
 % 3. Set up the plant structure
 plant.dynamics = @multi_dynamics_pendulum;    % dynamics ODE function
