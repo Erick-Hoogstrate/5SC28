@@ -4,7 +4,6 @@ out = np.load('training-data.npz')
 th_train = out['th'] #th[0],th[1],th[2],th[3],...
 u_train = out['u'] #u[0],u[1],u[2],u[3],...
 
-# data = np.load('test-prediction-submission-file.npz')
 data = np.load('test-prediction-submission-file.npz')
 upast_test = data['upast'] #N by u[k-15],u[k-14],...,u[k-1]
 thpast_test = data['thpast'] #N by y[k-15],y[k-14],...,y[k-1]
@@ -19,13 +18,19 @@ def create_IO_data(u,y,na,nb):
         Y.append(y[k])
     return np.array(X), np.array(Y)
 
-na = 5
-nb = 5
+na = 8
+nb = 3
 Xtrain, Ytrain = create_IO_data(u_train, th_train, na, nb)
 
-from sklearn import linear_model
-reg = linear_model.LinearRegression()
-reg.fit(Xtrain,Ytrain)
+
+import pickle
+# Load the saved model and kernel using pickle
+with open('GPmodel.dump', 'rb') as file:
+    reg = pickle.load(file)
+
+# Print the kernel configuration
+print(reg.kernel_)
+
 
 Ytrain_pred = reg.predict(Xtrain)
 print('train prediction errors:')
@@ -39,4 +44,4 @@ Xtest = np.concatenate([upast_test[:,15-nb:], thpast_test[:,15-na:]],axis=1)
 Ypredict = reg.predict(Xtest)
 assert len(Ypredict)==len(upast_test), 'number of samples changed!!'
 
-np.savez('test-prediction-example-submission-file.npz', upast=upast_test, thpast=thpast_test, thnow=Ypredict)
+np.savez('NARX-GP-prediction-submission-file.npz', upast=upast_test, thpast=thpast_test, thnow=Ypredict)

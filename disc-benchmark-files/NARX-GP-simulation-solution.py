@@ -16,12 +16,18 @@ def create_IO_data(u,y,na,nb):
         Y.append(y[k])
     return np.array(X), np.array(Y)
 
-na = 2
-nb = 20
+na = 8
+nb = 3
 Xtrain, Ytrain = create_IO_data(u_train, th_train, na, nb)
 
-from sklearn import linear_model
-reg = linear_model.LinearRegression()
+import pickle
+# Load the saved model and kernel using pickle
+with open('GPmodel.dump', 'rb') as file:
+    reg = pickle.load(file)
+
+# Print the kernel configuration
+print(reg.kernel_)
+
 reg.fit(Xtrain,Ytrain)
 
 Ytrain_pred = reg.predict(Xtrain)
@@ -58,4 +64,4 @@ skip = 50
 th_test_sim = simulation_IO_model(lambda x: reg.predict(x[None,:])[0], u_test, th_test, skip=skip)
 
 assert len(th_test_sim)==len(th_test)
-np.savez('test-simulation-example-submission-file.npz', th=th_test_sim, u=u_test)
+np.savez('NARX-GP-simulation-submission-file.npz', th=th_test_sim, u=u_test)
