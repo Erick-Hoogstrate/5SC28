@@ -28,8 +28,6 @@ with open('GPmodel.dump', 'rb') as file:
 # Print the kernel configuration
 print(reg.kernel_)
 
-reg.fit(Xtrain,Ytrain)
-
 Ytrain_pred = reg.predict(Xtrain)
 print('train prediction errors:')
 print('RMS:', np.mean((Ytrain_pred-Ytrain)**2)**0.5,'radians')
