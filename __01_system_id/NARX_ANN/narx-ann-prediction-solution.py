@@ -21,12 +21,12 @@ def create_IO_data(u,y,na,nb):
         Y.append(y[k])
     return np.array(X), np.array(Y)
 
-na = 15
+na = 3
 nb = 15
 Xtrain, Ytrain = create_IO_data(u_train, th_train, na, nb)
 
-model = Narx(na+nb,50,5).to(DEVICE)
-model.load_state_dict(torch.load(r'narx15K_na15_nb15_nlay5_nnode50_pred'))
+model = Narx(na+nb,100,1).to(DEVICE)
+model.load_state_dict(torch.load(r'narx15K_na3_nb15_nlay1_nnode100_pred'))
 
 Ytrain_pred = model(torch.tensor(Xtrain, device=DEVICE)).detach().cpu().numpy()
 print('train prediction errors:')
