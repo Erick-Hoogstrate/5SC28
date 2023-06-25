@@ -1,5 +1,3 @@
-# Instructions
+# Folder overview
 
-Setup implemented in the dynamics
-
-Perhaps change lines 59 & 60 in `dynamics_pendulum.m`.
+- pendulum_learn.m should be ran to train a policy on the setup
