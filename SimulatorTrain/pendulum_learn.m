@@ -1,10 +1,13 @@
 % 1. Initialization
-clear all; close all;
+clear all; close all; clc;
+tic;
 settings_pendulum;            % load scenario-specific settings
-basename = 'pendulumSim_';       % filename used for saving data
+basename = 'MultiPendulum_';       % filename used for saving data
 
 % 2. Initial J random rollouts
 for jj = 1:J
+    policy.targetState = randi([1, 3])
+    cost.targetState = policy.targetState
   [xx, yy, realCost{jj}, latent{jj}] = ...
     rollout(gaussian(mu0, S0), struct('maxU',policy.maxU), H, plant, cost);
   x = [x; xx]; y = [y; yy];       % augment training sets for dynamics model
@@ -19,6 +22,8 @@ mu0Sim = mu0Sim(dyno); S0Sim = S0Sim(dyno,dyno);
 
 % 3. Controlled learning (N iterations)
 for j = 1:N
+    policy.targetState = randi([1, 3])
+    cost.targetState = policy.targetState
   trainDynModel;   % train (GP) dynamics model
   learnPolicy;     % learn policy
   applyController; % apply controller to system
@@ -28,3 +33,4 @@ for j = 1:N
     draw_rollout_pendulum;
   end
 end
+toc;

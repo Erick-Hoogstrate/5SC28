@@ -1,3 +1,24 @@
+%% settings_pendulum.m
+% *Summary:* Script set up the pendulum scenario
+%
+% Copyright (C) 2008-2013 by 
+% Marc Deisenroth, Andrew McHutchon, Joe Hall, and Carl Edward Rasmussen.
+%
+% Last modified: 2013-05-24
+%
+%% High-Level Steps
+% # Define state and important indices
+% # Set up scenario
+% # Set up the plant structure
+% # Set up the policy structure
+% # Set up the cost structure
+% # Set up the GP dynamics model structure
+% # Parameters for policy optimization
+% # Plotting verbosity
+% # Some array initializations
+
+%% Code
+
 warning('off','all'); format short; format compact; 
 
 % include some paths
@@ -19,7 +40,7 @@ rand('seed',5); randn('seed',13);
 %  3  sin(theta)    complex representation ...
 %  4  cos(theta)    ... of angle of pendulum
 %  5  u             torque applied to the pendulum
-%  6  signal        signal indicating the target position
+%  6  signal        target changing signal
 
 % 1b. Important indices
 % odei  indicies for the ode solver
@@ -35,7 +56,7 @@ augi = [];                  % variables to be augmented
 dyno = [1 2];               % variables to be predicted (and known to loss)
 angi = [2];                 % angle variables
 dyni = [1 3 4];             % variables that serve as inputs to the dynamics GP
-poli = [1 3 4 6];           % variables that serve as inputs to the policy
+poli = [1 3 4];             % variables that serve as inputs to the policy
 difi = [1 2];               % variables that are learned via differences
 
 % 2. Set up the scenario
@@ -44,9 +65,9 @@ T = 4;                         % [s] prediction time
 H = ceil(T/dt);                % prediction steps (optimization horizon)
 mu0 = [0 0]';                  % initial state mean
 S0 = 0.01*eye(2);              % initial state variance
-N = 20;                        % number of policy optimizations
-J = 3;                         % no. of inital training rollouts (of length H)
-K = 1;                         % number of initial states for which we optimize
+N = 10;                        % number of policy optimizations
+J = 10;                         % no. of inital training rollouts (of length H)
+K = 3;                         % number of initial states for which we optimize
 nc = 10;                       % size of controller training set
 
 % 3. Set up the plant structure
@@ -66,16 +87,17 @@ plant.prop = @propagated;
 % 4. Set up the policy structure
 policy.fcn = @(policy,m,s)conCat(@congp,@gSat,policy,m,s);% controller 
                                                           % representation
-policy.maxU = 3;                                        % max. amplitude of 
+policy.maxU = 3;                                          % max. amplitude of 
                                                           % torque
 [mm ss cc] = gTrig(mu0, S0, plant.angi);                  % represent angles 
-mm = [mu0; mm]; cc = S0*cc; ss = [S0 cc; cc' ss];         % in complex plane      
+mm = [mu0; mm]; cc = S0*cc; ss = [S0 cc; cc' ss];         % in complex plane
 policy.p.inputs = gaussian(mm(poli), ss(poli,poli), nc)'; % init. location of 
                                                           % basis functions
-policy.p.targets = 0.1*randn(nc, length(policy.maxU));    % init. policy targets 
+policy.p.targets = 0.1*randn(nc, length(policy.maxU));  % init. policy targets 
                                                           % (close to zero)
 policy.p.hyp = log([1 0.7 0.7 1 0.01]');                  % initialize 
                                                           % hyper-parameters
+policy.targetState = 2
 
 
 
@@ -86,7 +108,8 @@ cost.p = 1.0;                                        % length of pendulum
 cost.width = 0.5;                                    % cost function width
 cost.expl = 0;                                       % exploration parameter
 cost.angle = plant.angi;                             % angle variables in cost
-cost.target = [0 pi-deg2rad(10); 0 pi; 0 pi+deg2rad(10)]';                               % target state
+cost.target = [0 (17/18)*pi; 0 pi; 0 (19/18)*pi]';   % target state
+cost.targetState = policy.targetState
 
 
 % 6. Set up the GP dynamics model structure

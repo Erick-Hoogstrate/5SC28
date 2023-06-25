@@ -60,8 +60,8 @@ Q = zeros(D1); Q(D0+1:D0+2,D0+1:D0+2) = eye(2)*ell^2;
 
 % 3. Trigonometric augmentation
 if D1-D0 > 0
-  target = [cost.target(:); ...
-    gTrig(cost.target(:), zeros(numel(cost.target)), cost.angle)];
+  target = [cost.target(:, cost.targetState); ...
+    gTrig(cost.target(:, cost.targetState), zeros(numel(cost.target)), cost.angle)];
   
   i = 1:D0; k = D0+1:D1;
   [M(k), S(k,k), C, mdm, sdm, Cdm, mds, sds, Cds] = ...
