@@ -71,14 +71,18 @@ def convert_to_narx(
 
 @dataclass
 class GS_Dataset:
-    x_data: np.ndarray = None
-    y_data: np.ndarray = None
+    x_data_train: np.ndarray = None
+    y_data_train: np.ndarray = None
     x_data_val: np.ndarray = None
     y_data_val: np.ndarray = None
+    x_data_test: np.ndarray = None
+    y_data_test: np.ndarray = None
     x_train: torch.Tensor = None
     y_train: torch.Tensor = None
     x_val: torch.Tensor = None
     y_val: torch.Tensor = None
+    x_test: torch.Tensor = None
+    y_test: torch.Tensor = None
 
 
 @dataclass
@@ -95,15 +99,20 @@ class GS_Results:
 def make_gs_dataset(
     x_data: np.ndarray, y_data: np.ndarray, n_a: int, n_b: int, device: torch.device
 ) -> GS_Dataset:
-    x_train, x_data_val, y_train, y_data_val = train_test_split(
+    x_data_train, x_data_test, y_data_train, y_data_test = train_test_split(
         x_data, y_data, shuffle=False
     )
-    x_train, y_train = convert_to_narx(x_train, y_train, n_a, n_b)
+    x_data_train, x_data_val, y_data_train, y_data_val=train_test_split(
+        x_data_train, y_data_train, shuffle=False
+    )
+
+    x_train, y_train = convert_to_narx(x_data_train, y_data_train, n_a, n_b)
+    x_test, y_test = convert_to_narx(x_data_test, y_data_test, n_a, n_b)
     x_val, y_val = convert_to_narx(x_data_val, y_data_val, n_a, n_b)
-    x_train, x_val, y_train, y_val = [
-        x.to(device) for x in [x_train, x_val, y_train, y_val]
+    x_train, x_test, x_val, y_train, y_test, y_val = [
+        x.to(device) for x in [x_train, x_test, x_val, y_train, y_test, y_val]
     ]
 
     return GS_Dataset(
-        x_data, y_data, x_data_val, y_data_val, x_train, y_train, x_val, y_val
+        x_data_train, y_data_train, x_data_val, y_data_val, x_data_test, y_data_test,x_train, y_train, x_val, y_val, x_test, y_test
     )
