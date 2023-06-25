@@ -1,0 +1,15 @@
+gamma = 0.98 #f=)
+batch_size = 128 #f=)
+N_iterations = 41 #f=)
+N_rollout = 50000 #f=)
+N_epochs = 50 #f=)
+N_evals = 10 #f=)
+lr = 0.0005 #given
+
+max_episode_steps = 300
+
+Discrete value set changed to [-3.0, -1.2, -0.48, -0.19, 0, 0.19, 0.48, 1.2, 3.0]
+
+1691.3917838759164
+
+reward_function =  lambda self: ((np.cos(self.th-target_angle)+1.5)**2 - 0.25) + 0.00125*(((np.cos(self.th)+1)/2)*(self.omega)**2) - 0.01*((self.u)**2)

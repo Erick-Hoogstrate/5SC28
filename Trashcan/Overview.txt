@@ -1,0 +1,79 @@
+Qfunction: Normal refers to:
+class Qfunction(nn.Module):
+    def __init__(self, env):
+        super(Qfunction,self).__init__()
+        self.lay1 = nn.Linear(env.observation_space.shape[0], 40)
+        self.F1 =  nn.Tanh() #a)
+        self.lay2 = nn.Linear(40,env.action_space.n)
+    
+    def forward(self, obs):
+        return self.lay2(self.F1(self.lay1(obs)))
+
+
+(Bevat kleine offset aan de bovenkant) (30 min trainen)
+Filename: 
+	QfunctionGood.pt
+Qfunction:
+	Normal
+Reward function:
+	angle_reward = lambda self: ((np.cos(self.th-target_angle)+1.5)**2 - 0.25)
+	correctVelocity_reward = lambda self: 0.00250*(((np.cos(self.th)+1)/2)*(self.omega)**2)
+	voltage_penalty = lambda self: -0.005*((self.u)**2)
+	incorrectAngle_penalty = lambda self: -0.05*np.abs(self.th-target_angle)
+
+	reward_function = lambda self: angle_reward(self) + correctVelocity_reward(self) + voltage_penalty(self) + incorrectAngle_penalty(self)
+Discrete values:
+	env.set_discrete_values_manual([-3.0, -1.5, -0.75, -0.5, -0.25, -0.15, -0.1, 0, 0.1, 0.15, 0.25, 0.5, 0.75, 1.5, 3.0]) # 15
+
+
+
+Filename: 
+	QfunctionQfunctionTanh.pt
+Qfunction:
+	Normal
+Reward function:
+	angle_reward = lambda self: ((np.cos(self.th-target_angle)+1.5)**2 - 0.25)
+	correctVelocity_reward = lambda self: 0.00250*(((np.cos(self.th)+1)/2)*(self.omega)**2)
+	voltage_penalty = lambda self: -0.005*((self.u)**2)
+	incorrectAngle_penalty = lambda self: -0.05*np.abs(self.th-target_angle)
+
+	reward_function = lambda self: angle_reward(self) + correctVelocity_reward(self) + voltage_penalty(self) + incorrectAngle_penalty(self)
+Discrete values:
+	env.set_discrete_values(discrete_size = 5, minmax = 3.0, div = 3/0.9, rnd = 2)
+
+
+Filename: 
+	QfunctionQfunctionReLU.pt
+Qfunction:
+	proper renamed function:
+	class QfunctionReLU(nn.Module):
+    		def __init__(self, env):
+       			super(QfunctionReLU,self).__init__()
+        		self.lay1 = nn.Linear(env.observation_space.shape[0], 40)
+        		self.F1 =  nn.ReLU()
+        		self.lay2 = nn.Linear(40,env.action_space.n)
+    
+    		def forward(self, obs):
+        		return self.lay2(self.F1(self.lay1(obs)))
+	
+	Or otherwise take the existing function and change F1 to ReLU:
+	class Qfunction(nn.Module):
+    		def __init__(self, env):
+        		super(Qfunction,self).__init__()
+        		self.lay1 = nn.Linear(env.observation_space.shape[0], 40)
+        		self.F1 =  nn.ReLU() #a)
+        		self.lay2 = nn.Linear(40,env.action_space.n)
+    
+    		def forward(self, obs):
+        		return self.lay2(self.F1(self.lay1(obs)))
+
+Reward function:
+	angle_reward = lambda self: ((np.cos(self.th-target_angle)+1.5)**2 - 0.25)
+	correctVelocity_reward = lambda self: 0.00250*(((np.cos(self.th)+1)/2)*(self.omega)**2)
+	voltage_penalty = lambda self: -0.005*((self.u)**2)
+	incorrectAngle_penalty = lambda self: -0.05*np.abs(self.th-target_angle)
+
+	reward_function = lambda self: angle_reward(self) + correctVelocity_reward(self) + voltage_penalty(self) + incorrectAngle_penalty(self)
+Discrete values:
+	env.set_discrete_values(discrete_size = 5, minmax = 3.0, div = 3/0.9, rnd = 2)
+
