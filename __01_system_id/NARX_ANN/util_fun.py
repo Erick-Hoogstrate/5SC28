@@ -155,6 +155,65 @@ def train_narx_simval(
     )
     return results
 
+def train_narx(
+    model: Narx,
+    n_a: int,
+    n_b: int,
+    data: GS_Dataset,
+    log_file: str = None,
+    param_msg: str = "",
+    n_epochs: int = 100,
+    device: torch.device = DEVICE,
+):
+    # initialise comparison values and results lists
+    best_nrms = float("inf")
+    best_model = None
+    loss_list = []
+    nrms_list = []
+
+    # initialise checkpoints for validation
+    checkpoints = [*range(0, n_epochs + 1, max(n_epochs // 25, 1))]
+    if checkpoints[-1] != (n_epochs-1):
+        checkpoints += [n_epochs-1]
+    optimizer = torch.optim.Adam(model.parameters())
+    # start training loop
+    for epoch in range(n_epochs):
+        loss = torch.mean(((model(data.x_train) - data.y_train) ** 2)/torch.std(data.y_train))
+        optimizer.zero_grad()
+        loss.backward()
+        optimizer.step()
+
+        if epoch in checkpoints:
+            print_log(f"Checkpoint at epoch {epoch+1}: " + param_msg + " \n", log_file)
+            # append loss to list, check prediction and simulation nrms
+            loss_list.append(loss.item())
+
+            nrms = calculate_error_nrms(model.forward(data.x_val), data.y_val)
+            nrms_list.append(nrms)
+            if nrms < best_nrms:
+                print_log(
+                    f"current best pred NRMS: {nrms}, previous best pred NRMS: {best_nrms} \n",
+                    log_file,
+                )
+                best_nrms = nrms
+                best_model = deepcopy(model)
+            else:
+                print_log(
+                    f"current pred NRMS: {nrms}, current best pred NRMS: {best_nrms} \n",
+                    log_file,
+                )
+
+
+    results = GS_Results(
+        best_model,
+        None,
+        best_nrms,
+        None,
+        loss_list,
+        nrms_list,
+        None,
+    )
+    return results
 
 def print_log(msg: str, log_file: str = None) -> None:
     print(msg)
