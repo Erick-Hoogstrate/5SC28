@@ -24,7 +24,7 @@ def load_data(
 
     data = np.load(TRAIN_DATA)
 
-    x, y = data["th"], data["u"]
+    x, y = data["u"], data["th"]
 
     if as_tensor:
         x, y = torch.tensor(x), torch.tensor(y)
