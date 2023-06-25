@@ -4,8 +4,8 @@ from scipy.io import loadmat
 
 from matplotlib import pyplot as plt
 
-submission_file = sys.argv[1] #first argument is input file
-solution_file = sys.argv[2] #second argument is solution file
+submission_file = r'NARX-GP-simulation-submission-file.npz' #first argument is input file
+solution_file = r'test-simulation-submission-file.npz' #second argument is solution file
 
 def load_task_file(file, target_name):
     if file.endswith('csv'):
